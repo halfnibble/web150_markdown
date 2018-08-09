@@ -210,6 +210,34 @@ var Editor = function () {
     return Editor;
 }();
 
-var pumpkie = new Pumpkin();
+var _createClass$3 = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var PreviewField = function () {
+    function PreviewField(inputId, outputId) {
+        _classCallCheck$3(this, PreviewField);
+
+        this.input = document.getElementById(inputId);
+        this.output = document.getElementById(outputId);
+        this.setup();
+    }
+
+    _createClass$3(PreviewField, [{
+        key: 'setup',
+        value: function setup() {
+            var _this = this;
+
+            this.input.addEventListener('keyup', function () {
+                _this.output.innerHTML = _this.input.value;
+            });
+        }
+    }]);
+
+    return PreviewField;
+}();
+
+var pumpkie = new Pumpkin();
+var author = new PreviewField('author', 'authorOutput');
+var publishedDate = new PreviewField('publishedDate', 'publishedDateOutput');
 var editor = new Editor('markdownInput', 'markdownOutput');
