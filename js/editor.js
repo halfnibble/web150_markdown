@@ -12,11 +12,15 @@ class Editor {
         this.input.addEventListener('keyup', () => {
             let content = this.input.value;
             let dom = this.markdown.parse(content);
-            for (let existing of this.output.children) {
-                existing.remove();
-            }
-            this.output.appendChild(dom);
+            this.clearOutput().appendChild(dom);
         }, false);
+    }
+    
+    clearOutput() {
+        for (let content of this.output.children) {
+            content.remove();
+        }
+        return this.output;
     }
 }
 

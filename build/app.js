@@ -26,25 +26,39 @@ function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Co
 var Markdown = function () {
     function Markdown() {
         _classCallCheck$2(this, Markdown);
+
+        this.node = null;
     }
 
     _createClass$2(Markdown, [{
         key: 'parse',
         value: function parse(text) {
-            var inputArray = text.split('\n');
-            var outputDiv = document.createElement('div');
+            var textArray = text.split('\n');
+            var result = document.createElement('div');
+            this.node = null;
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;
 
             try {
-                for (var _iterator = inputArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                for (var _iterator = textArray[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                     var line = _step.value;
 
-                    var tagType = this.getTagType(line);
-                    var element = document.createElement(tagType);
-                    element.innerHTML = line;
-                    outputDiv.appendChild(element);
+                    var nodeType = this.getNodeType(line),
+                        parentNodeType = this.getParentNodeType(nodeType);
+                    line = this.cleanLine(line);
+                    if (parentNodeType === null) {
+                        if (this.node !== null) {
+                            result.appendChild(this.node.cloneNode(true));
+                            this.node = null;
+                        }
+                        result.appendChild(this.createNode(nodeType, line));
+                    } else {
+                        if (this.node === null) {
+                            this.node = this.createNode(parentNodeType, '');
+                        }
+                        this.node.appendChild(this.createNode(nodeType, line));
+                    }
                 }
             } catch (err) {
                 _didIteratorError = true;
@@ -61,12 +75,75 @@ var Markdown = function () {
                 }
             }
 
-            return outputDiv;
+            return result;
         }
     }, {
-        key: 'getTagType',
-        value: function getTagType(line) {
-            return 'h1';
+        key: 'getNodeType',
+        value: function getNodeType(line) {
+            if (line === '') {
+                return 'br';
+            } else if (/^#{1,6}/.test(line)) {
+                var headerNumber = 0;
+                var _iteratorNormalCompletion2 = true;
+                var _didIteratorError2 = false;
+                var _iteratorError2 = undefined;
+
+                try {
+                    for (var _iterator2 = line[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                        var char = _step2.value;
+
+                        if (headerNumber >= 6) {
+                            break;
+                        }
+                        if (char === '#') {
+                            headerNumber += 1;
+                        }
+                    }
+                } catch (err) {
+                    _didIteratorError2 = true;
+                    _iteratorError2 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                            _iterator2.return();
+                        }
+                    } finally {
+                        if (_didIteratorError2) {
+                            throw _iteratorError2;
+                        }
+                    }
+                }
+
+                return 'h' + headerNumber;
+            } else if (/^-\s/.test(line)) {
+                return 'li';
+            } else {
+                return 'p';
+            }
+        }
+    }, {
+        key: 'cleanLine',
+        value: function cleanLine(line) {
+            return line.replace(/^#{1,6}\s+|^-\s+/, '');
+        }
+    }, {
+        key: 'getParentNodeType',
+        value: function getParentNodeType(nodeType) {
+            switch (nodeType) {
+                case 'li':
+                    return 'ul';
+                default:
+                    return null;
+            }
+        }
+    }, {
+        key: 'createNode',
+        value: function createNode(nodeType, text) {
+            var node = document.createElement(nodeType);
+            if (text) {
+                node.innerHTML = text;
+            }
+            return node;
         }
     }]);
 
@@ -95,33 +172,38 @@ var Editor = function () {
             this.input.addEventListener('keyup', function () {
                 var content = _this.input.value;
                 var dom = _this.markdown.parse(content);
-                var _iteratorNormalCompletion = true;
-                var _didIteratorError = false;
-                var _iteratorError = undefined;
+                _this.clearOutput().appendChild(dom);
+            }, false);
+        }
+    }, {
+        key: 'clearOutput',
+        value: function clearOutput() {
+            var _iteratorNormalCompletion = true;
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
 
+            try {
+                for (var _iterator = this.output.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                    var content = _step.value;
+
+                    content.remove();
+                }
+            } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+            } finally {
                 try {
-                    for (var _iterator = _this.output.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                        var existing = _step.value;
-
-                        existing.remove();
+                    if (!_iteratorNormalCompletion && _iterator.return) {
+                        _iterator.return();
                     }
-                } catch (err) {
-                    _didIteratorError = true;
-                    _iteratorError = err;
                 } finally {
-                    try {
-                        if (!_iteratorNormalCompletion && _iterator.return) {
-                            _iterator.return();
-                        }
-                    } finally {
-                        if (_didIteratorError) {
-                            throw _iteratorError;
-                        }
+                    if (_didIteratorError) {
+                        throw _iteratorError;
                     }
                 }
+            }
 
-                _this.output.appendChild(dom);
-            }, false);
+            return this.output;
         }
     }]);
 

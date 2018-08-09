@@ -26,18 +26,47 @@
         <div class="row">
             <div class="col-md-6">
                 <h2>
-                    Markdown Editor
+                    Blog Editor
                 </h2>
                 
+                <p>
+                    <label for="author">
+                        Author
+                    </label>
+                    <input type="text" id="author" name="author">
+                </p>
+                
+                <p>
+                   <label for="publishedDate">
+                        Published Date
+                    </label>
+                    <input type="text" id="publishedDate" name="publishedDate">
+                </p>
+                
                 <label for="markdownInput">
-                    Type Markdown Here
+                    Type Blog Here (Using Markdown)
                 </label>
                 <textarea id="markdownInput" name="markdownInput" class="form-control"></textarea>
             </div>
             <div class="col-md-6">
                 <h2>
-                    Markdown Preview
+                    Blog Preview
                 </h2>
+                
+                <p>
+                    <label for="author">
+                        Author
+                    </label>
+                    <span id="authorOutput"></span>
+                </p>
+                
+                <p>
+                   <label for="publishedDate">
+                        Published Date
+                    </label>
+                    <em id="publishedDateOutput"></em>
+                </p>
+                
                 <label>Preview</label>
                 <div id="markdownOutput">
                     
