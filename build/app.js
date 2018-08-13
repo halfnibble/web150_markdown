@@ -237,7 +237,14 @@ var PreviewField = function () {
     return PreviewField;
 }();
 
+/* global $ */
 var pumpkie = new Pumpkin();
 var author = new PreviewField('author', 'authorOutput');
 var publishedDate = new PreviewField('publishedDate', 'publishedDateOutput');
 var editor = new Editor('markdownInput', 'markdownOutput');
+
+$(document).ready(function () {
+    $.get('https://web-150-wedekind-halfnibble-1.c9users.io:8080', function (response) {
+        alert(response);
+    });
+});
